@@ -100,8 +100,8 @@ def cli():
     "-s",
     "--seconds",
     type=int,
-    help="Seconds to wait between actions. Default is 10",
-    default=10,
+    help="Seconds to wait between actions. Default is 60",
+    default=60,
 )
 @click.option(
     "-p",
@@ -123,12 +123,12 @@ def cli():
     "-m",
     "--mode",
     type=click.Choice(["m", "k", "mk", "ks", "ms", "mks"]),
-    help="Available options: m, k, mk, ks, ms, mks; default is mks. "
+    help="Available options: m, k, mk, ks, ms, mks; default is m. "
     "This is the action that will be executed when the user is idle at the defined interval: "
     "m -> moves mouse defined number of pixels; "
     "k -> presses shift key on keyboard; "
     "s -> switches windows on screen; ",
-    default="mks",
+    default="m",
 )
 @click.option("-t", "--tabs", type=int, help="Number of window tabs to switch screens")
 @click.option(
