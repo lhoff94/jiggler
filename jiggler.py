@@ -79,8 +79,12 @@ def move_mouse(seconds, pixels, quiet):
         sleep(seconds)
         if not this.alive:
             break
-
-        mouse.move(pixels, pixels)
+        if pixels != 0:
+            mouse.move(pixels, pixels)
+        else:
+            mouse.move(1, 1)
+            sleep(0.1)
+            mouse.move(-1, -1)
         x, y = list("{:.2f}".format(coord) for coord in mouse.position)
         if not quiet:
             print(f"{time.ctime()}\t[move_mouse]\tMoved mouse to {x}, {y}")
@@ -103,7 +107,8 @@ def cli():
     "-p",
     "--pixels",
     type=int,
-    help="Number of pixels the mouse should move. Default is 1",
+    help="Number of pixels the mouse should move. Default is 1"
+    "Set to 0 to move mouse 1 pixel and immediately move back",
     default=1,
 )
 
