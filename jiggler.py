@@ -21,7 +21,7 @@ special_keys = {
 }
 
 
-def key_press(seconds):
+def key_press(seconds, quiet):
     """Presses Shift key every x seconds
 
     Args:
@@ -36,10 +36,11 @@ def key_press(seconds):
 
         keyboard.press(Key.shift)
         keyboard.release(Key.shift)
-        print(f"{time.ctime()}\t[keypress]\tPressed {Key.shift} key")
+        if not quiet:
+            print(f"{time.ctime()}\t[keypress]\tPressed {Key.shift} key")
 
 
-def switch_screen(seconds, tabs, key):
+def switch_screen(seconds, tabs, key,quiet):
     """Switches screen windows every x seconds
 
     Args:
@@ -61,10 +62,11 @@ def switch_screen(seconds, tabs, key):
             for _ in range(t):
                 keyboard.press(Key.tab)
                 keyboard.release(Key.tab)
-            print(f"{time.ctime()}\t[switch_screen]\tSwitched tab {t} {modifier} {Key.tab}")
+            if not quiet:
+                print(f"{time.ctime()}\t[switch_screen]\tSwitched tab {t} {modifier} {Key.tab}")
 
 
-def move_mouse(seconds, pixels):
+def move_mouse(seconds, pixels, quiet):
     """Moves mouse every x seconds
 
     Args:
@@ -80,7 +82,8 @@ def move_mouse(seconds, pixels):
 
         mouse.move(pixels, pixels)
         x, y = list("{:.2f}".format(coord) for coord in mouse.position)
-        print(f"{time.ctime()}\t[move_mouse]\tMoved mouse to {x}, {y}")
+        if not quiet:
+            print(f"{time.ctime()}\t[move_mouse]\tMoved mouse to {x}, {y}")
 
 
 @click.group()
@@ -103,6 +106,14 @@ def cli():
     help="Number of pixels the mouse should move. Default is 1",
     default=1,
 )
+
+@click.option(
+    "-q",
+    "--quiet",
+    is_flag=True,
+    help="Suppress output if this flag is set",
+)
+
 @click.option(
     "-m",
     "--mode",
@@ -122,18 +133,18 @@ def cli():
     help="Special key for switching windows",
     default=special_keys[platform.system()],
 )
-def start(seconds, pixels, mode, tabs, key):
+def start(seconds, pixels, mode, tabs, key, quiet):
 
     try:
         threads = []
         if "m" in mode:
-            threads.append(Thread(target=move_mouse, args=(seconds, pixels)))
+            threads.append(Thread(target=move_mouse, args=(seconds, pixels, quiet)))
 
         if "k" in mode:
             threads.append(Thread(target=key_press, args=(seconds,)))
 
         if "s" in mode:
-            threads.append(Thread(target=switch_screen, args=(seconds, tabs, key)))
+            threads.append(Thread(target=switch_screen, args=(seconds, tabs, key, quiet)))
 
         for t in threads:
             t.start()
